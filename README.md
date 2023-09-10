@@ -7,7 +7,8 @@ run the program with the `-h` option to see the program usage.
 # quickstart
 ```console
 $ git clone https://github.com/wulliy/bingle.git
-$ node . -h
+$ cd bingle
+$ node bingle.js -h
 ```
 
 # example
