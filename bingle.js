@@ -40,10 +40,10 @@ let config = {
 }
 
 let audio = {
-	input: null,
-	output: "./out",
-	index: {},
-	wa: DEFAULT_WA
+	input_path: null,
+	output_path: "./out",
+	wa: DEFAULT_WA,
+	index: {}
 }
 
 const exit = process.exit
@@ -69,21 +69,21 @@ function check_output_dir(dir) {
 	}
 }
 
-function parse_args(args) {
+function parse_arguments(args) {
 	let option = null
-	let count = 0
+	let value_count = 0
 	let values = []
 
 	while (args.length > 0) {
-		const arg = args.shift()
-		if (arg.startsWith("-")) { // assume it's a option!
-			option = arg.replace(OPTION_REGEX, "")
-			count = 0
+		const argument = args.shift()
+		if (argument.startsWith("-")) { // assume it's a option!
+			option = argument.replace(OPTION_REGEX, "")
+			value_count = 0
 			values = []
 		}
 
-		count++
-		values.push(arg)
+		value_count++
+		values.push(argument)
 		switch (option) {
 			case "h": // help option
 				console.log(HELP_MESSAGE)
@@ -94,7 +94,7 @@ function parse_args(args) {
 				break
 
 			case "x": { // new entry option
-				if (count < 3) continue //error(`an option "${option}" was expecting 2 values, but only got ${count-1} values`)
+				if (value_count < 3) continue //error(`an option "${option}" was expecting 2 values, but only got ${count-1} values`)
 				const name = values[1]
 				const val = values[2]
 
@@ -108,7 +108,7 @@ function parse_args(args) {
 			}
 
 			case "w": { // "wa" option
-				if (count < 2) continue //error(`an option "${option}" was expecting 1 value, but only got ${count-1} values`)
+				if (value_count < 2) continue //error(`an option "${option}" was expecting 1 value, but only got ${count-1} values`)
 				const val = values[1]
 				const num = Number(val)
 				if (!isNaN(num)) {
@@ -120,14 +120,14 @@ function parse_args(args) {
 			}
 
 			case "i": { // input path option
-				if (count < 1) continue //error(`an option "${option}" was expecting 1 value, but only got ${count-1} values`)
-				audio.input = values[1]
+				if (value_count < 1) continue //error(`an option "${option}" was expecting 1 value, but only got ${count-1} values`)
+				audio.input_path = values[1]
 				break
 			}
 
 			case "o": { // output path option
-				if (count < 1) continue //error(`an option "${option}" was expecting 1 value, but only got ${count-1} values`)
-				audio.output = values[1]
+				if (value_count < 1) continue //error(`an option "${option}" was expecting 1 value, but only got ${count-1} values`)
+				audio.output_path = values[1]
 				break
 			}
 
@@ -138,18 +138,18 @@ function parse_args(args) {
 	}
 }
 
-function write_files(data) {
-	Object.entries(data).forEach(entry => {
+function write_files_from_audio_data(audio_data, output_dir) {
+	Object.entries(audio_data).forEach(entry => {
 		const name = entry[0]
 		const buffer = Buffer.from(entry[1]) 
-		const file_path = path.join(audio.output, `${name}.mp3`)
+		const file_path = path.join(output_dir, `${name}.mp3`)
 
 		fs.writeFileSync(file_path, buffer)
 		console.log(`wrote "${file_path}"`)
 	})
 }
 
-function unpack_bin(wa, index, buffer) {
+function unpack_binary_file(wa, index, buffer) {
 	buffer = new Uint8Array(buffer)
 	if (buffer == null) error("no buffer specified, exiting")
 
@@ -244,18 +244,18 @@ function main() {
 	}
 
 	// argument parsing & error handling
-	parse_args(ARGS)
+	parse_arguments(ARGS)
 
-	if (audio.input == null) {
+	if (audio.input_path == null) {
 		error("no input file was specified")
 	}
 
-	if (!audio.input.endsWith(".bin")) {
+	if (!audio.input_path.endsWith(".bin")) {
 		warn("input file doesn't end with .bin")
 	}
 
-	if (audio.output === "./out") {
-		warn(`no output directory set, defaulting to "${audio.output}"`)
+	if (audio.output_path === "./out") {
+		warn(`no output directory set, defaulting to "${audio.output_path}"`)
 	}
 
 	if (Object.keys(audio.index).length === 0) {
@@ -266,19 +266,19 @@ function main() {
 		warn(`"wa" value is still set to "${DEFAULT_WA}", this may cause problems when unpacking`)
 	}
 
-	check_output_dir(audio.output)
+	check_output_dir(audio.output_path)
 	console.log("") // print an empty line for good measure :-)
 
 	try {
 		// bingle magic incoming
-		console.log(`reading "${audio.input}"`)
-		let buf = fs.readFileSync(audio.input)
+		console.log(`reading "${audio.input_path}"`)
+		let buf = fs.readFileSync(audio.input_path)
 		
 		console.log("unpacking .bin file")
-		const files = unpack_bin(audio.wa, audio.index, buf)
+		const audio_data = unpack_binary_file(audio.wa, audio.index, buf)
 
 		console.log("writing audio files...")
-		write_files(files)
+		write_files_from_audio_data(audio_data, audio.output_path)
 
 		console.log("finished!")
 	} catch(err) {
