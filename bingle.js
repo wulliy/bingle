@@ -32,6 +32,7 @@ notes:
 `.trim()
 
 const DEFAULT_WA = 418
+const DEFAULT_OUTPUT_PATH = "./out"
 const OPTION_REGEX = /-+/
 
 // declarations
@@ -41,7 +42,7 @@ let config = {
 
 let audio = {
 	input_path: null,
-	output_path: "./out",
+	output_path: DEFAULT_OUTPUT_PATH,
 	wa: DEFAULT_WA,
 	index: {}
 }
@@ -49,7 +50,7 @@ let audio = {
 const exit = process.exit
 function error(...args) {
 	console.log("ERROR:", ...args)
-	process.exit()
+	exit()
 }
 
 function warn(...args) {
@@ -254,8 +255,8 @@ function main() {
 		warn("input file doesn't end with .bin")
 	}
 
-	if (audio.output_path === "./out") {
-		warn(`no output directory set, defaulting to "${audio.output_path}"`)
+	if (audio.output_path === DEFAULT_OUTPUT_PATH) {
+		warn(`no output directory set, defaulting to "${DEFAULT_OUTPUT_PATH}"`)
 	}
 
 	if (Object.keys(audio.index).length === 0) {
