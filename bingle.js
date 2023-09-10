@@ -32,7 +32,7 @@ notes:
 `.trim()
 
 const DEFAULT_WA = 418
-const OPTION_REGEX = /^-+/g
+const OPTION_REGEX = /-+/
 
 // declarations
 let config = {
