@@ -6,10 +6,12 @@ const fs = require("fs")
 const path = require("path")
 
 // constants
+const ARGS = process.argv.slice(2)
+const FILE_NAME = process.argv[1].split("\\").pop()
+
 const NAME = "bingle"
 const VERSION = "1.0"
 const INTRO = `${NAME} v${VERSION} - google audio file extractor thingamabob`
-const FILE_NAME = process.argv[1].split("\\").pop()
 const HELP_MESSAGE = `usage: ${FILE_NAME} [-<option>] directory
 
 options:
@@ -30,16 +32,19 @@ notes:
 `.trim()
 
 const DEFAULT_WA = 418
-const ARGS = process.argv.slice(2)
+const OPTION_REGEX = /^-+/g
 
 // declarations
+let config = {
+	slient: false
+}
+
 let audio = {
 	input: null,
 	output: "./out",
 	index: {},
 	wa: DEFAULT_WA
 }
-let slient = false
 
 const exit = process.exit
 function error(...args) {
@@ -48,7 +53,7 @@ function error(...args) {
 }
 
 function warn(...args) {
-	if (slient) return
+	if (config.slient) return
 	console.log("WARNING:", ...args)
 }
 
@@ -60,7 +65,7 @@ function check_output_dir(dir) {
 			fs.mkdirSync(dir)
 		}
 	} catch(err) {
-		error(`failed checking existance of output directory: ${err}`)
+		error(`failed checking existance of output directory "${dir}": ${err}`)
 	}
 }
 
@@ -69,7 +74,6 @@ function parse_args(args) {
 	let count = 0
 	let values = []
 
-	const OPTION_REGEX = /-+/
 	while (args.length > 0) {
 		const arg = args.shift()
 		if (arg.startsWith("-")) { // assume it's a option!
@@ -84,9 +88,11 @@ function parse_args(args) {
 			case "h": // help option
 				console.log(HELP_MESSAGE)
 				exit()
+
 			case "s": // slient option
-				slient = true
+				config.slient = true
 				break
+
 			case "x": { // new entry option
 				if (count < 3) continue //error(`an option "${option}" was expecting 2 values, but only got ${count-1} values`)
 				const name = values[1]
@@ -100,6 +106,7 @@ function parse_args(args) {
 				}
 				break
 			}
+
 			case "w": { // "wa" option
 				if (count < 2) continue //error(`an option "${option}" was expecting 1 value, but only got ${count-1} values`)
 				const val = values[1]
@@ -111,21 +118,35 @@ function parse_args(args) {
 				}
 				break
 			}
+
 			case "i": { // input path option
 				if (count < 1) continue //error(`an option "${option}" was expecting 1 value, but only got ${count-1} values`)
 				audio.input = values[1]
 				break
 			}
+
 			case "o": { // output path option
 				if (count < 1) continue //error(`an option "${option}" was expecting 1 value, but only got ${count-1} values`)
 				audio.output = values[1]
 				break
 			}
+
 			default:
 				error(`${arg} isn't a valid option, exiting`)
 				break
 		}
 	}
+}
+
+function write_files(data) {
+	Object.entries(data).forEach(entry => {
+		const name = entry[0]
+		const buffer = Buffer.from(entry[1]) 
+		const file_path = path.join(audio.output, `${name}.mp3`)
+
+		fs.writeFileSync(file_path, buffer)
+		console.log(`wrote "${file_path}"`)
+	})
 }
 
 function unpack_bin(wa, index, buffer) {
@@ -219,7 +240,7 @@ function unpack_bin(wa, index, buffer) {
 function main() {
 	console.log(INTRO)
 	if (ARGS.length === 0) {
-		error(`no arguments provided. maybe try again, but with the \"-h\" option`)
+		error(`no arguments provided. maybe try again, but with the \"-h\" option this time`)
 	}
 
 	// argument parsing & error handling
@@ -257,14 +278,7 @@ function main() {
 		const files = unpack_bin(audio.wa, audio.index, buf)
 
 		console.log("writing audio files...")
-		Object.entries(files).forEach(file => {
-			const name = file[0]
-			const buffer = Buffer.from(file[1]) 
-			const dir = path.join(audio.output, `${name}.mp3`)
-
-			fs.writeFileSync(dir, buffer)
-			console.log(`wrote "${dir}"`)
-		})
+		write_files(files)
 
 		console.log("finished!")
 	} catch(err) {
