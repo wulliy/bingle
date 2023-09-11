@@ -40,4 +40,4 @@ there are many different ways, but the easiest way should be to follow the steps
 ### i'm not seeing any `.bin` files...
 make sure you're recording network activity first before inspecting any requests for `.bin` files.
 
-if you've already tried this and still don't see any, then the game probably doesn't use `.bin` files for storing its audio. in that case, you don't need to use this tool, but to instead look for any `.mp3` or `.ogg` files and to download those.
+if you've already tried this and still don't see any, then the game probably doesn't use `.bin` files for storing its audio. in that case, you don't need to use this tool, but to instead look for any `.mp3` or `.ogg` files and to download either one of those (or both if you want, but it really doesn't matter).
