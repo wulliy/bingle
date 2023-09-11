@@ -13,7 +13,7 @@ $ node bingle.js -h
 
 # example
 ```console
-$ node . -i ./bin/minesweeper/music_audio.bin -w 385 -x LOSE_MUSIC 2 -x WIN_WATER_HARP 1456 -x WINNER_MUSIC 2826
+$ node bingle.js -i ./bin/minesweeper/music_audio.bin -w 385 -x LOSE_MUSIC 2 -x WIN_WATER_HARP 1456 -x WINNER_MUSIC 2826
 ```
 
 this example takes in a `music_audio.bin` file taken from [Google Minesweeper](https://www.google.com/fbx?fbx=minesweeper), and extracts 3 audio files from it.
