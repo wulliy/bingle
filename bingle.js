@@ -83,6 +83,12 @@ function parse_arguments(args) {
 			values = []
 		}
 
+		/*
+			TODO(#1): touch up the argument parser so it can account for the values length
+			this will be very handy for easily printing errors whenever an option doesn't have enough
+			values supplied
+		*/
+
 		value_count++
 		values.push(argument)
 		switch (option) {
