@@ -35,7 +35,7 @@ a couple examples of this are [Google Snake](https://www.google.com/fbx?fbx=snak
 there are many different ways, but the easiest way should be to follow the steps below:
 1. open your browser's DevTools and check the Network tab
 2. make sure it's recording any and all network activity
-3. visit a web-based game by Google
+3. visit a "web-based" game by Google
 	- if you're already on one, just refresh the page
 4. look for any `GET` requests that fetch a `.bin` file
 5. download the file from its URL
