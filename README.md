@@ -1,4 +1,7 @@
 # bingle
+> [!WARNING]  
+> this software is still in development, so expect bugs to appear!
+
 a CLI tool written in pure JavaScript that takes in any `.bin` file taken from any "web-based" game by Google, and extracts all the audio files contained within it, according to the index.
 
 # usage
