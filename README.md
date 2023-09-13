@@ -28,7 +28,7 @@ this project is licensed under the [MIT License](https://choosealicense.com/lice
 
 # Q&A
 ### what counts as a "web-based" game by Google?
-any game that uses web technologies, is hosted somewhere online, and was/is maintained/developed by Google counts as a "web-based" game.
+any game that uses web-based technologies and was/is maintained and developed by Google counts as a "web-based" game.
 a couple examples of this are [Google Snake](https://www.google.com/fbx?fbx=snake_arcade), [Google Minesweeper](https://www.google.com/fbx?fbx=minesweeper), and so on.
 
 ### how do i obtain a `.bin` file?
