@@ -47,6 +47,7 @@ let audio = {
 	index: {}
 }
 
+const stdout = process.stdout
 const exit = process.exit
 function error(...args) {
 	console.log("ERROR:", ...args)
@@ -151,8 +152,9 @@ function write_files_from_audio_data(audio_data, output_dir) {
 		const buffer = Buffer.from(entry[1]) 
 		const file_path = path.join(output_dir, `${name}.mp3`)
 
+		stdout.write(`writing "${file_path}"... `)
 		fs.writeFileSync(file_path, buffer)
-		console.log(`wrote "${file_path}"`)
+		console.log("OK")
 	})
 }
 
@@ -278,15 +280,15 @@ function main() {
 
 	try {
 		// bingle magic incoming
-		console.log(`reading "${audio.input_path}"`)
+		stdout.write(`reading "${audio.input_path}"... `)
 		let buf = fs.readFileSync(audio.input_path)
-		
-		console.log("unpacking .bin file")
+		console.log("OK")
+
+		stdout.write("unpacking .bin file... ")
 		const audio_data = unpack_binary_file(audio.wa, audio.index, buf)
+		console.log("OK")
 
-		console.log("writing audio files...")
 		write_files_from_audio_data(audio_data, audio.output_path)
-
 		console.log("finished!")
 	} catch(err) {
 		error("an unexpected error has occured!", err)
